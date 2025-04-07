@@ -50,10 +50,10 @@ def reorder_points(pts):
     s = pts.sum(axis=1)
     diff = np.diff(pts, axis=1)
 
-    new_pts[0] = pts[np.argmin(s)]       # Top-left
-    new_pts[2] = pts[np.argmax(s)]       # Bottom-right
-    new_pts[1] = pts[np.argmin(diff)]    # Top-right
-    new_pts[3] = pts[np.argmax(diff)]    # Bottom-left
+    new_pts[0] = pts[np.argmin(s)]       
+    new_pts[2] = pts[np.argmax(s)]      
+    new_pts[1] = pts[np.argmin(diff)]   
+    new_pts[3] = pts[np.argmax(diff)]   
     return new_pts
 
 def perspective_transform(img, contour):
@@ -142,13 +142,10 @@ def cnn_predict_digit(cell_img):
 @app.post("/process-sudoku/", response_model=List[List[int]])
 async def process_sudoku_image(file: UploadFile = File(...)):
     try:
-        # Read the uploaded file
         contents = await file.read()
         
-        # First, convert the image to black and white and enhance its quality
         enhanced_image = convert_to_black_and_white(contents)
         
-        # Process the original image
         original, _, blurred = read_and_preprocess_image(contents)
         contour = find_sudoku_contour(blurred)
         if contour is None:
@@ -184,10 +181,8 @@ async def process_sudoku_image(file: UploadFile = File(...)):
 @app.post("/preview-processing/")
 async def preview_processing(file: UploadFile = File(...)):
     try:
-        # Read the uploaded file
         contents = await file.read()
         
-        # Process the image and get intermediate steps
         original, _, blurred = read_and_preprocess_image(contents)
         contour = find_sudoku_contour(blurred)
         if contour is None:
@@ -199,7 +194,6 @@ async def preview_processing(file: UploadFile = File(...)):
         grid_removed = draw_grid_lines(gray, lines)
         binary_img = convert_to_binary(grid_removed)
         
-        # Convert images to bytes for response
         def image_to_bytes(img):
             _, encoded_img = cv2.imencode('.png', img)
             return io.BytesIO(encoded_img.tobytes())
